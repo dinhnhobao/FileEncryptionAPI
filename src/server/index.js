@@ -73,8 +73,8 @@ app.post('/api/decrypt', upload.single('avatar'), (req, res) => {
     instance
         .decrypt()
         .catch(e => console.error(e));
-    return res.json({
-        isSuccessful: true,
-    })
+// E:\Documents\GitHub\NUS IT\simple-react-full-stack\src\server\index.js
+    console.log(req.body.filename);
+    res.sendFile(req.body.filename, { 'root': STORAGE_PATH });
 });
 app.listen(process.env.PORT || 8080, () => console.log(`Listening on port ${process.env.PORT || 8080}!`));
