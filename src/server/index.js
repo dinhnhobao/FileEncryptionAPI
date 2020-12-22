@@ -2,6 +2,8 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const multer = require('multer');
 const os = require('os');
+const fs = require('fs');
+
 const Cryptify = require('cryptify');
 const app = express();
 
@@ -28,53 +30,52 @@ var storage = multer.diskStorage({
 
 var upload = multer({ storage: storage });
 
-const PASSWORD = 'DoQuyen123*';
+const PASSWORD = 'SecretPassword123*';
+
+app.get('/api/test', upload.none(), (req, res) => {
+    return res.json({
+        isWorking: true,
+    });
+});
 app.post('/api/encrypt', upload.single('file'), (req, res) => {
-    console.log(req);
     console.log(req.file); // req.file.originalname
-    console.log(JSON.stringify(req.body));
+    
     const fileName = req.file.path.split("\\")[1];
     const filePath = STORAGE_PATH + '/' + fileName;
 
     const instance = new Cryptify(filePath, PASSWORD); // depends on OS
-
 
     setTimeout(() => {
         instance
             .encrypt()
             .catch(e => console.error(e));
         console.log(`${filePath} encrypted`);
-    }, 5000);
-
-    return res.json({
-        isSuccessful: true,
-        fileName: fileName,
-    })
+    }, 1000);
+    
+    console.log("Sending");
+    setTimeout( () => {
+        res.download(filePath, fileName);
+    }, 2000);
 });
 
-app.post('/api/encrypt-mock', upload.single('avatar'), (req, res) => {
-    const filePath = './file/Ideapad-1.jpg';
-    const password = 'DoQuyen123*';
+app.post('/api/decrypt', upload.single('file'), (req, res) => {
 
-    const instance = new Cryptify(filePath, PASSWORD);
-    instance
-        .encrypt()
-        .catch(e => console.error(e));
-    return res.json({
-        isSuccessful: true,
-    })
-});
+    console.log(req.file); // req.file.originalname
+    
+    const fileName = req.file.path.split("\\")[1];
+    const filePath = STORAGE_PATH + '/' + fileName;
 
-app.post('/api/decrypt', upload.single('avatar'), (req, res) => {
-    const filePath = STORAGE_PATH + '/' + req.body.filename;
-    const password = req.body.password;
+    const instance = new Cryptify(filePath, PASSWORD); // depends on OS
 
-    const instance = new Cryptify(filePath, password);
-    instance
+    setTimeout(() => { instance
         .decrypt()
         .catch(e => console.error(e));
-// E:\Documents\GitHub\NUS IT\simple-react-full-stack\src\server\index.js
-    console.log(req.body.filename);
-    res.sendFile(req.body.filename, { 'root': STORAGE_PATH });
+        console.log(`${filePath} decrypted`);
+    }, 1000);
+
+    setTimeout(() => {
+        res.download(filePath, fileName);
+    }, 3000);
 });
+
 app.listen(process.env.PORT || 8080, () => console.log(`Listening on port ${process.env.PORT || 8080}!`));
