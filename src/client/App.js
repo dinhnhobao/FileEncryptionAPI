@@ -12,7 +12,7 @@ export default class App extends Component {
       <div>
         <div style={{fontWeight: 'bold'}}> Encrypt </div>
         <div>
-          <form id="form-encrypt" action="http://localhost:3000/api/encrypt" method="post" encType="multipart/form-data">
+          <form id="form-encrypt" action="/api/encrypt" method="post" encType="multipart/form-data">
             File <input type="file" name="file" />
           </form>
         </div>
@@ -20,7 +20,7 @@ export default class App extends Component {
         <br></br>
         <div style={{fontWeight: 'bold'}}> Decrypt </div>
         <div>
-          <form id="form-decrypt" action="http://localhost:3000/api/decrypt" method="post">
+          <form id="form-decrypt" action="/api/decrypt" method="post">
             Filename <input type="text" name="filename" />
             Password <input type="text" name="password" />
           </form>
