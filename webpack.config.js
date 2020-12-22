@@ -32,12 +32,14 @@ module.exports = {
     extensions: ['*', '.js', '.jsx']
   },
   devServer: {
+    disableHostCheck: true,
     port: 3000,
     open: true,
     historyApiFallback: true,
     proxy: {
       '/api': 'http://localhost:8080'
-    }
+    },
+    
   },
   plugins: [
     new CleanWebpackPlugin([outputDirectory]),
