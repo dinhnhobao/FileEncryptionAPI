@@ -40,7 +40,7 @@ app.get('/api/test', upload.none(), (req, res) => {
 app.post('/api/encrypt', upload.single('file'), (req, res) => {
     console.log(req.file); // req.file.originalname
     
-    const fileName = req.file.path.split("\\")[1];
+    const fileName = req.file.path.split("/")[1];
     const filePath = STORAGE_PATH + '/' + fileName;
 
     const instance = new Cryptify(filePath, PASSWORD); // depends on OS
@@ -62,7 +62,7 @@ app.post('/api/decrypt', upload.single('file'), (req, res) => {
 
     console.log(req.file); // req.file.originalname
     
-    const fileName = req.file.path.split("\\")[1];
+    const fileName = req.file.path.split("/")[1];
     const filePath = STORAGE_PATH + '/' + fileName;
 
     const instance = new Cryptify(filePath, PASSWORD); // depends on OS
