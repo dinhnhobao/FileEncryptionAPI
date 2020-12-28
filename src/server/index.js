@@ -19,6 +19,11 @@ function sleep(time) {
     return new Promise((resolve) => setTimeout(resolve, time));
 }
 
+const parsePassword = (password) => {
+    const INITIALS = '*+-/aA11';
+    return INITIALS + password;
+}
+
 var storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, STORAGE_PATH)
@@ -44,7 +49,9 @@ app.post('/api/encrypt', upload.single('file'), (req, res) => {
     const filePath = STORAGE_PATH + '/' + fileName;
     const password = req.body.password;
 
-    const instance = new Cryptify(filePath, password); // depends on OS
+    // check empty password
+
+    const instance = new Cryptify(filePath, parsePassword(password)); // depends on OS
 
     setTimeout(() => {
         instance
@@ -67,7 +74,7 @@ app.post('/api/decrypt', upload.single('file'), (req, res) => {
     const filePath = STORAGE_PATH + '/' + fileName;
 
     const password = req.body.password;
-    const instance = new Cryptify(filePath, password); // depends on OS
+    const instance = new Cryptify(filePath, parsePassword(password)); // depends on OS
 
     setTimeout(() => { instance
         .decrypt()
