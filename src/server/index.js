@@ -14,11 +14,6 @@ app.use(express.static(__dirname + '/public'));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-// sleep time expects milliseconds
-function sleep(time) {
-    return new Promise((resolve) => setTimeout(resolve, time));
-}
-
 const parsePassword = (password) => {
     const INITIALS = '*+-/aA11';
     return INITIALS + password;
