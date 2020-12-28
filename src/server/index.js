@@ -42,8 +42,9 @@ app.post('/api/encrypt', upload.single('file'), (req, res) => {
     
     const fileName = req.file.path.split("/")[1];
     const filePath = STORAGE_PATH + '/' + fileName;
+    const password = req.body.password;
 
-    const instance = new Cryptify(filePath, PASSWORD); // depends on OS
+    const instance = new Cryptify(filePath, password); // depends on OS
 
     setTimeout(() => {
         instance
@@ -65,7 +66,8 @@ app.post('/api/decrypt', upload.single('file'), (req, res) => {
     const fileName = req.file.path.split("/")[1];
     const filePath = STORAGE_PATH + '/' + fileName;
 
-    const instance = new Cryptify(filePath, PASSWORD); // depends on OS
+    const password = req.body.password;
+    const instance = new Cryptify(filePath, password); // depends on OS
 
     setTimeout(() => { instance
         .decrypt()
