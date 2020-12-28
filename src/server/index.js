@@ -19,6 +19,9 @@ const parsePassword = (password) => {
     return INITIALS + password;
 }
 
+const isAuthorised = (accessKey) => {
+    return accessKey == 'SECRET_KEY';
+}
 var storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, STORAGE_PATH)
@@ -41,6 +44,13 @@ app.post('/api/encrypt', upload.single('file'), (req, res) => {
     console.log(req.file); // req.file.originalname
 
     const accessKey = req.headers.authorization;
+        
+    if (!isAuthorised(accessKey)) {
+        return res.status(204).json({
+            message: "Wrong API access key. Please contact your adminstrator."
+        })
+    }
+
     console.log(accessKey);
 
     const fileName = req.file.path.split("/")[1];
