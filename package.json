@@ -8,8 +8,6 @@
         "start": "npm run build && node src/index.js",
         "server": "nodemon src/index.js"
     },
-    "author": "Sandeep Raveesh",
-    "license": "ISC",
     "dependencies": {
         "babel-polyfill": "^6.26.0",
         "cryptify": "^4.0.2",
