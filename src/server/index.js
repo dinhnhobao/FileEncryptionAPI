@@ -6,6 +6,9 @@ const fs = require('fs');
 
 const Cryptify = require('cryptify');
 const app = express();
+const getLogger = require('webpack-log');
+
+const log = getLogger({ name: 'server-log' });
 
 const STORAGE_PATH = './file';
 
@@ -22,6 +25,11 @@ const parsePassword = (password) => {
 const isAuthorised = (accessKey) => {
     return accessKey == 'SECRET_KEY';
 }
+
+const isPasswordEmpty = (password) => {
+    return (false);
+}
+
 var storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, STORAGE_PATH)
@@ -41,8 +49,6 @@ app.get('/api/test', upload.none(), (req, res) => {
     });
 });
 app.post('/api/encrypt', upload.single('file'), (req, res) => {
-    console.log(req.file); // req.file.originalname
-
     const accessKey = req.headers.authorization;
         
     if (!isAuthorised(accessKey)) {
@@ -51,13 +57,25 @@ app.post('/api/encrypt', upload.single('file'), (req, res) => {
         })
     }
 
+    const password = req.body.password;
+
+    log.error('Password check', password);
+
+    if (isPasswordEmpty(password)) {
+        log.error('Password empty');
+        log.error(password);
+
+        return res.status(202).json({
+            message: "Your password cannot be empty. Please choose a password."
+        })
+    }
+
     console.log(accessKey);
+
+    console.log(req.file); // req.file.originalname
 
     const fileName = req.file.path.split("/")[1];
     const filePath = STORAGE_PATH + '/' + fileName;
-    const password = req.body.password;
-
-    // check empty password
 
     const instance = new Cryptify(filePath, parsePassword(password)); // depends on OS
 
