@@ -188,17 +188,17 @@ nodemon.json file is used to describe the configurations for Nodemon. Below is t
 
 ```javascript
 {
-  "watch": ["src/server/"]
+  "watch": ["src/"]
 }
 ```
 
-Here, we tell nodemon to watch the files in the directory src/server where out server side code resides. Nodemon will restart the node server whenever a file under src/server directory is modified.
+Here, we tell nodemon to watch the files in the directory src where out server side code resides. Nodemon will restart the node server whenever a file under src directory is modified.
 
 ### Express
 
 Express is a web application framework for Node.js. It is used to build our backend API's.
 
-src/server/index.js is the entry point to the server application. Below is the src/server/index.js file
+src/index.js is the entry point to the server application. Below is the src/index.js file
 
 ```javascript
 const express = require("express");
@@ -221,7 +221,7 @@ This starts a server and listens on port 8080 for connections. The app responds 
 
 ```javascript
 "client": "webpack-dev-server --mode development --devtool inline-source-map --hot",
-"server": "nodemon src/server/index.js",
+"server": "nodemon src/index.js",
 "dev": "concurrently \"npm run server\" \"npm run client\""
 ```
 
