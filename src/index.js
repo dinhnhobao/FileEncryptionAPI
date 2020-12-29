@@ -43,17 +43,25 @@ var upload = multer({ storage: storage });
 
 const PASSWORD = 'SecretPassword123*';
 
+console.log("Outside");
+
+app.get('/', upload.none(), (req, res) => {
+    res.redirect('/api/test');
+});
+
 app.get('/api/test', upload.none(), (req, res) => {
     return res.json({
         isWorking: true,
     });
 });
 
+const MESSAGE = "message";
 app.post('/api/encrypt', upload.single('file'), (req, res) => {
     const accessKey = req.headers.authorization;
 
     if (!isAuthorised(accessKey)) {
-        return res.status(204).json({
+        res.header(MESSAGE, "401 Unauthorised");
+        return res.json({
             message: "Wrong API access key. Please contact your adminstrator."
         });
     }
@@ -61,17 +69,18 @@ app.post('/api/encrypt', upload.single('file'), (req, res) => {
     const password = req.body.password;
 
     if (isPasswordEmpty(password)) {
-        log.error('Password empty');
-        log.error(password);
+        res.header(MESSAGE, "400 Bad Request");
 
-        return res.status(202).json({
+        console.log('Password empty');
+        console.log(password);
+
+        return res.json({
             message: "Your password cannot be empty. Please choose a password."
         });
     }
 
     const fileName = req.file.path.split("/")[1];
     const filePath = STORAGE_PATH + '/' + fileName;
-
     const instance = new Cryptify(filePath, parsePassword(password)); // depends on OS
 
     setTimeout(() => {
@@ -91,6 +100,7 @@ app.post('/api/decrypt', upload.single('file'), (req, res) => {
     const accessKey = req.headers.authorization;
 
     if (!isAuthorised(accessKey)) {
+        res.header(MESSAGE, "401 Unauthorised");
         return res.status(204).json({
             message: "Wrong API access key. Please contact your adminstrator."
         })
@@ -108,6 +118,7 @@ app.post('/api/decrypt', upload.single('file'), (req, res) => {
             .catch(e => console.error(e));
         console.log(`${filePath} decrypted`);
     }, 1000);
+    res.header(MESSAGE, "200 OK");
 
     setTimeout(() => {
         res.download(filePath, fileName);
