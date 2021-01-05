@@ -12,11 +12,6 @@ app.use(express.static(__dirname + '/public'));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-// sleep time expects milliseconds
-function sleep(time) {
-    return new Promise((resolve) => setTimeout(resolve, time));
-}
-
 var storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, STORAGE_PATH)
@@ -38,8 +33,23 @@ app.get('/api/test', upload.none(), (req, res) => {
     });
 });
 
+const isAuthorised = (apiKey) => {
+    return apiKey === 'eb53a0d3-8fb2-4f25-bb89-a4dfb7a64fc6';
+}
+
 const PASSWORD = 'DoQuyen123*';
+
 app.post('/api/encrypt', upload.single('file'), (req, res) => {
+    const apiKey = req.headers.authorization;
+
+    console.log(apiKey);
+
+    if (!isAuthorised(apiKey)) {
+        return res.status(401).json({
+            message: "Wrong API access key. Please contact your adminstrator."
+        });
+    }
+
     const fileName = req.file.path.split("/")[1];
     const filePath = STORAGE_PATH + '/' + fileName;
 
@@ -54,11 +64,21 @@ app.post('/api/encrypt', upload.single('file'), (req, res) => {
 
     setTimeout(() => {
         console.log("File sending")
-        res.sendFile(fileName, {root: STORAGE_PATH});
+        res.sendFile(fileName, { root: STORAGE_PATH });
     }, 10000);
 });
 
 app.post('/api/decrypt', upload.single('file'), (req, res) => {
+    const apiKey = req.headers.authorization;
+
+    console.log(apiKey);
+
+    if (!isAuthorised(apiKey)) {
+        return res.status(401).json({
+            message: "Wrong API access key. Please contact your adminstrator."
+        });
+    }
+
     const fileName = req.file.path.split("/")[1];
     const filePath = STORAGE_PATH + '/' + fileName;
 
@@ -73,7 +93,7 @@ app.post('/api/decrypt', upload.single('file'), (req, res) => {
 
     setTimeout(() => {
         console.log("File sending")
-        res.sendFile(fileName, {root: STORAGE_PATH});
+        res.sendFile(fileName, { root: STORAGE_PATH });
     }, 10000);
 });
 
