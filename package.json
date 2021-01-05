@@ -12,6 +12,7 @@
     "dependencies": {
         "babel-polyfill": "^6.26.0",
         "cryptify": "^4.0.2",
+        "esm": "^3.2.25",
         "express": "^4.16.3",
         "multer": "^1.4.2"
     },
