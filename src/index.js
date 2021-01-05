@@ -9,8 +9,6 @@ const utils = require('./utils');
 
 const STORAGE_PATH = './file';
 
-app.use(express.static('dist'));
-app.use(express.static(__dirname + '/public'));
 app.use(bodyParser.urlencoded({
   extended: true,
 }));
