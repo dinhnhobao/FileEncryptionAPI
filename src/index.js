@@ -10,65 +10,66 @@ const utils = require('./utils');
 const STORAGE_PATH = './file';
 
 app.use(bodyParser.urlencoded({
-  extended: true,
+    extended: true,
 }));
 app.use(bodyParser.json());
 
 const storage = multer.diskStorage({
-  destination: function(req, file, cb) {
-    cb(null, STORAGE_PATH);
-  },
-  filename: function(req, file, cb) {
-    cb(null, Date.now() + '-' + file.originalname);
-  },
+    destination: function(req, file, cb) {
+        cb(null, STORAGE_PATH);
+    },
+    filename: function(req, file, cb) {
+        cb(null, Date.now() + '-' + file.originalname);
+    },
 });
 
 const upload = multer({
-  storage: storage,
+    storage: storage,
 });
 
 app.get('/', upload.none(), (req, res) => {
-  res.redirect('/api/test');
+    res.redirect('/api/test');
 });
 
 app.get('/api/test', upload.none(), (req, res) => {
-  return res.json({
-    isWorking: true,
-  });
+    return res.json({
+        isWorking: true,
+    });
 });
 
 const deleteFile = (filePath) => {
-  fs.unlinkSync(filePath);
+    fs.unlinkSync(filePath);
 
-  try {
-    // remove tmp files
-    if (fs.existsSync(filePath + '.tmp')) {
-      fs.unlinkSync(filePath + '.tmp');
+    try {
+        // remove tmp files
+        if (fs.existsSync(filePath + '.tmp')) {
+            fs.unlinkSync(filePath + '.tmp');
+        }
+    } catch (err) {
+        console.log('No .tmp file to delete');
     }
-  } catch (err) {
-    console.log('No .tmp file to delete');
-  }
 };
 
 app.post('/api/encrypt', upload.single('file'), (req, res) => {
-  const fileName = req.file.path.split('/')[1];
-  const filePath = STORAGE_PATH + '/' + fileName;
+    const fileName = req.file.path.split('/')[1];
+    const filePath = STORAGE_PATH + '/' + fileName;
 
-  const apiKey = req.headers.authorization;
-  if (!utils.isAuthorised(apiKey)) {
-    deleteFile(filePath);
-    return res.status(401).json({
-      message: 'Wrong API access key. Please contact your adminstrator.',
-    });
-  }
+    const apiKey = req.headers.authorization;
+    if (!utils.isAuthorised(apiKey)) {
+        deleteFile(filePath);
+        return res.status(401).json({
+            message: 'Wrong API access key. Please contact your adminstrator.',
+        });
+    }
 
-  const password = req.body.password;
-  if (!utils.isPasswordValid(password)) {
-    deleteFile(filePath);
-    return res.status(400).json({
-      message: 'Your password is invalid. Please try again.',
-    });
-  }
+    const password = req.body.password;
+    if (!utils.isPasswordValid(password)) {
+        deleteFile(filePath);
+        return res.status(400).json({
+            message: 'Your password is invalid. Please try again.',
+        });
+    }
+
     const instance = new Cryptify(filePath,
         utils.parsePassword(password)); // depends on OS
 
@@ -93,25 +94,19 @@ app.post('/api/encrypt', upload.single('file'), (req, res) => {
 });
 
 app.post('/api/decrypt', upload.single('file'), (req, res) => {
-  const fileName = req.file.path.split('/')[1];
-  const filePath = STORAGE_PATH + '/' + fileName;
+    const fileName = req.file.path.split('/')[1];
+    const filePath = STORAGE_PATH + '/' + fileName;
 
-  const apiKey = req.headers.authorization;
-  if (!utils.isAuthorised(apiKey)) {
-    deleteFile(filePath);
-    return res.status(401).json({
-      message: 'Wrong API access key. Please contact your adminstrator.',
-    });
-  }
+    const apiKey = req.headers.authorization;
+    if (!utils.isAuthorised(apiKey)) {
+        deleteFile(filePath);
+        return res.status(401).json({
+            message: 'Wrong API access key. Please contact your adminstrator.',
+        });
+    }
 
-  const password = req.body.password;
-  if (!utils.isPasswordValid(password)) {
-    deleteFile(filePath);
-    return res.status(400).json({
-      message: 'Your password is invalid. Please try again.',
-    });
-  }
-
+    const password = req.body.password;
+    if (!utils.isPasswordValid(password)) {
         deleteFile(filePath);
         return res.status(400).json({
             message: 'Your password is invalid. Please try again.',
@@ -146,5 +141,5 @@ app.post('/api/decrypt', upload.single('file'), (req, res) => {
 });
 
 app.listen(process.env.PORT || 8080, () => {
-  console.log(`Listening on port ${process.env.PORT || 8080}!`);
+    console.log(`Listening on port ${process.env.PORT || 8080}!`);
 });
