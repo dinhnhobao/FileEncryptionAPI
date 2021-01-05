@@ -4,6 +4,7 @@ const multer = require('multer');
 const os = require('os');
 const Cryptify = require('cryptify');
 const app = express();
+const fs = require('fs');
 
 const STORAGE_PATH = './file';
 
@@ -46,11 +47,27 @@ const parsePassword = (password) => {
     return INITIALS + password;
 }
 
-const PASSWORD = 'DoQuyen123*';
+const deleteFile = (filePath) => {
+    fs.unlinkSync(filePath);
+
+    try {
+        // remove tmp files
+        console.log("checking");
+        if (fs.existsSync(filePath + '.tmp')) {
+            fs.unlinkSync(filePath + '.tmp');
+        }
+    } catch (err) {
+        console.log("No .tmp file to delete");
+    }
+}
 
 app.post('/api/encrypt', upload.single('file'), (req, res) => {
+    const fileName = req.file.path.split("/")[1];
+    const filePath = STORAGE_PATH + '/' + fileName;
+
     const apiKey = req.headers.authorization;
     if (!isAuthorised(apiKey)) {
+        deleteFile(filePath);
         return res.status(401).json({
             message: "Wrong API access key. Please contact your adminstrator."
         });
@@ -58,13 +75,11 @@ app.post('/api/encrypt', upload.single('file'), (req, res) => {
 
     const password = req.body.password;
     if (!isPasswordValid(password)) {
+        deleteFile(filePath);
         return res.status(400).json({
             message: "Your password is invalid. Please try again."
         });
     }
-
-    const fileName = req.file.path.split("/")[1];
-    const filePath = STORAGE_PATH + '/' + fileName;
 
     const instance = new Cryptify(filePath, parsePassword(password)); // depends on OS
 
@@ -73,17 +88,27 @@ app.post('/api/encrypt', upload.single('file'), (req, res) => {
             .encrypt()
             .catch(e => console.error(e));
         console.log(`${filePath} encrypted`);
-    }, 5000);
+    }, 1000);
 
     setTimeout(() => {
-        console.log("File sending")
-        res.sendFile(fileName, { root: STORAGE_PATH });
-    }, 10000);
+        console.log("File sending");
+        res.sendFile(fileName, { root: STORAGE_PATH }, (err) => {
+            if (err) {
+                console.log(err);
+                res.sendStatus(400);
+            }
+            deleteFile(filePath);
+        });
+    }, 5000);
 });
 
 app.post('/api/decrypt', upload.single('file'), (req, res) => {
+    const fileName = req.file.path.split("/")[1];
+    const filePath = STORAGE_PATH + '/' + fileName;
+
     const apiKey = req.headers.authorization;
     if (!isAuthorised(apiKey)) {
+        deleteFile(filePath);
         return res.status(401).json({
             message: "Wrong API access key. Please contact your adminstrator."
         });
@@ -91,13 +116,11 @@ app.post('/api/decrypt', upload.single('file'), (req, res) => {
 
     const password = req.body.password;
     if (!isPasswordValid(password)) {
+        deleteFile(filePath);
         return res.status(400).json({
             message: "Your password is invalid. Please try again."
         });
     }
-
-    const fileName = req.file.path.split("/")[1];
-    const filePath = STORAGE_PATH + '/' + fileName;
 
     const instance = new Cryptify(filePath, parsePassword(password)); // depends on OS
 
@@ -111,18 +134,25 @@ app.post('/api/decrypt', upload.single('file'), (req, res) => {
                 isSending = false;
             });
         console.log(`${filePath} decrypted`);
-    }, 5000);
+    }, 1000);
 
     setTimeout(() => {
-    }, 10000);
         if (isSending) {
             console.log("File sending");
-            res.sendFile(fileName, { root: STORAGE_PATH });
+            res.sendFile(fileName, { root: STORAGE_PATH }, (err) => {
+                if (err) {
+                    console.log(err);
+                    res.sendStatus(400);
+                }
+                deleteFile(filePath);
+            });
         } else {
+            deleteFile(filePath);
             return res.status(400).json({
                 message: "The password to decrypt the file is incorrect, or the file is corrupted. Please try again."
             });
         }
+    }, 5000);
 });
 
 app.listen(process.env.PORT || 8080, () => console.log(`Listening on port ${process.env.PORT || 8080}!`));
