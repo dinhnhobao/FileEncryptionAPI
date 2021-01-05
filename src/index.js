@@ -6,6 +6,8 @@ const Cryptify = require('cryptify');
 const app = express();
 const fs = require('fs');
 
+var utils = require('./utils');
+
 const STORAGE_PATH = './file';
 
 app.use(express.static('dist'));
@@ -34,25 +36,11 @@ app.get('/api/test', upload.none(), (req, res) => {
     });
 });
 
-const isAuthorised = (apiKey) => {
-    return apiKey === 'eb53a0d3-8fb2-4f25-bb89-a4dfb7a64fc6';
-}
-
-const isPasswordValid = (password) => {
-    return password.length > 0;
-}
-
-const parsePassword = (password) => {
-    const INITIALS = '*+-/aA11';
-    return INITIALS + password;
-}
-
 const deleteFile = (filePath) => {
     fs.unlinkSync(filePath);
 
     try {
         // remove tmp files
-        console.log("checking");
         if (fs.existsSync(filePath + '.tmp')) {
             fs.unlinkSync(filePath + '.tmp');
         }
@@ -66,7 +54,7 @@ app.post('/api/encrypt', upload.single('file'), (req, res) => {
     const filePath = STORAGE_PATH + '/' + fileName;
 
     const apiKey = req.headers.authorization;
-    if (!isAuthorised(apiKey)) {
+    if (!utils.isAuthorised(apiKey)) {
         deleteFile(filePath);
         return res.status(401).json({
             message: "Wrong API access key. Please contact your adminstrator."
@@ -74,14 +62,14 @@ app.post('/api/encrypt', upload.single('file'), (req, res) => {
     }
 
     const password = req.body.password;
-    if (!isPasswordValid(password)) {
+    if (!utils.isPasswordValid(password)) {
         deleteFile(filePath);
         return res.status(400).json({
             message: "Your password is invalid. Please try again."
         });
     }
 
-    const instance = new Cryptify(filePath, parsePassword(password)); // depends on OS
+    const instance = new Cryptify(filePath, utils.parsePassword(password)); // depends on OS
 
     setTimeout(() => {
         instance
@@ -107,7 +95,7 @@ app.post('/api/decrypt', upload.single('file'), (req, res) => {
     const filePath = STORAGE_PATH + '/' + fileName;
 
     const apiKey = req.headers.authorization;
-    if (!isAuthorised(apiKey)) {
+    if (!utils.isAuthorised(apiKey)) {
         deleteFile(filePath);
         return res.status(401).json({
             message: "Wrong API access key. Please contact your adminstrator."
@@ -115,14 +103,14 @@ app.post('/api/decrypt', upload.single('file'), (req, res) => {
     }
 
     const password = req.body.password;
-    if (!isPasswordValid(password)) {
+    if (!utils.isPasswordValid(password)) {
         deleteFile(filePath);
         return res.status(400).json({
             message: "Your password is invalid. Please try again."
         });
     }
 
-    const instance = new Cryptify(filePath, parsePassword(password)); // depends on OS
+    const instance = new Cryptify(filePath, utils.parsePassword(password)); // depends on OS
 
     isSending = true;
     setTimeout(() => {
