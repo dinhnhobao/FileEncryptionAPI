@@ -12,19 +12,23 @@ const STORAGE_PATH = './file';
 
 app.use(express.static('dist'));
 app.use(express.static(__dirname + '/public'));
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({
+    extended: true
+}));
 app.use(bodyParser.json());
 
 var storage = multer.diskStorage({
-    destination: function (req, file, cb) {
+    destination: function(req, file, cb) {
         cb(null, STORAGE_PATH)
     },
-    filename: function (req, file, cb) {
+    filename: function(req, file, cb) {
         cb(null, Date.now() + '-' + file.originalname)
     }
 });
 
-var upload = multer({ storage: storage });
+var upload = multer({
+    storage: storage
+});
 
 app.get('/', upload.none(), (req, res) => {
     res.redirect('/api/test');
@@ -80,7 +84,9 @@ app.post('/api/encrypt', upload.single('file'), (req, res) => {
 
     setTimeout(() => {
         console.log("File sending");
-        res.sendFile(fileName, { root: STORAGE_PATH }, (err) => {
+        res.sendFile(fileName, {
+            root: STORAGE_PATH
+        }, (err) => {
             if (err) {
                 console.log(err);
                 res.sendStatus(400);
@@ -127,7 +133,9 @@ app.post('/api/decrypt', upload.single('file'), (req, res) => {
     setTimeout(() => {
         if (isSending) {
             console.log("File sending");
-            res.sendFile(fileName, { root: STORAGE_PATH }, (err) => {
+            res.sendFile(fileName, {
+                root: STORAGE_PATH
+            }, (err) => {
                 if (err) {
                     console.log(err);
                     res.sendStatus(400);
