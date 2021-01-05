@@ -101,17 +101,28 @@ app.post('/api/decrypt', upload.single('file'), (req, res) => {
 
     const instance = new Cryptify(filePath, parsePassword(password)); // depends on OS
 
+    isSending = true;
     setTimeout(() => {
         instance
             .decrypt()
-            .catch(e => console.error(e));
+            .catch(e => {
+                console.log("Error found");
+                console.error(e);
+                isSending = false;
+            });
         console.log(`${filePath} decrypted`);
     }, 5000);
 
     setTimeout(() => {
-        console.log("File sending")
-        res.sendFile(fileName, { root: STORAGE_PATH });
     }, 10000);
+        if (isSending) {
+            console.log("File sending");
+            res.sendFile(fileName, { root: STORAGE_PATH });
+        } else {
+            return res.status(400).json({
+                message: "The password to decrypt the file is incorrect, or the file is corrupted. Please try again."
+            });
+        }
 });
 
 app.listen(process.env.PORT || 8080, () => console.log(`Listening on port ${process.env.PORT || 8080}!`));
