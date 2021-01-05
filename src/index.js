@@ -72,13 +72,11 @@ app.post('/api/encrypt', upload.single('file'), (req, res) => {
 
   const instance = new Cryptify(filePath,
       utils.parsePassword(password)); // depends on OS
-
-  setTimeout(() => {
+  
     instance
         .encrypt()
         .catch((e) => console.error(e));
     console.log(`${filePath} encrypted`);
-  }, 1000);
 
   setTimeout(() => {
     console.log('File sending');
@@ -117,17 +115,15 @@ app.post('/api/decrypt', upload.single('file'), (req, res) => {
   const instance = new Cryptify(filePath,
       utils.parsePassword(password)); // depends on OS
 
-  isSending = true;
-  setTimeout(() => {
-    instance
-        .decrypt()
-        .catch((e) => {
+  let isSending = true;
+  instance
+      .decrypt()
+      .catch((e) => {
           console.log('Error found');
           console.error(e);
           isSending = false;
-        });
-    console.log(`${filePath} decrypted`);
-  }, 1000);
+      });
+  console.log(`${filePath} decrypted`);
 
   setTimeout(() => {
     if (isSending) {
