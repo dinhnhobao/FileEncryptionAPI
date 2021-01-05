@@ -28,16 +28,22 @@ var storage = multer.diskStorage({
 
 var upload = multer({ storage: storage });
 
+app.get('/', upload.none(), (req, res) => {
+    res.redirect('/api/test');
+});
+
+app.get('/api/test', upload.none(), (req, res) => {
+    return res.json({
+        isWorking: true,
+    });
+});
+
 const PASSWORD = 'DoQuyen123*';
 app.post('/api/encrypt', upload.single('file'), (req, res) => {
-    console.log(req);
-    console.log(req.file); // req.file.originalname
-    console.log(JSON.stringify(req.body));
-    const fileName = req.file.path.split("\\")[1];
+    const fileName = req.file.path.split("/")[1];
     const filePath = STORAGE_PATH + '/' + fileName;
 
     const instance = new Cryptify(filePath, PASSWORD); // depends on OS
-
 
     setTimeout(() => {
         instance
@@ -46,35 +52,29 @@ app.post('/api/encrypt', upload.single('file'), (req, res) => {
         console.log(`${filePath} encrypted`);
     }, 5000);
 
-    return res.json({
-        isSuccessful: true,
-        fileName: fileName,
-    })
+    setTimeout(() => {
+        console.log("File sending")
+        res.sendFile(fileName, {root: STORAGE_PATH});
+    }, 10000);
 });
 
-app.post('/api/encrypt-mock', upload.single('avatar'), (req, res) => {
-    const filePath = './file/Ideapad-1.jpg';
-    const password = 'DoQuyen123*';
+app.post('/api/decrypt', upload.single('file'), (req, res) => {
+    const fileName = req.file.path.split("/")[1];
+    const filePath = STORAGE_PATH + '/' + fileName;
 
-    const instance = new Cryptify(filePath, PASSWORD);
-    instance
-        .encrypt()
-        .catch(e => console.error(e));
-    return res.json({
-        isSuccessful: true,
-    })
+    const instance = new Cryptify(filePath, PASSWORD); // depends on OS
+
+    setTimeout(() => {
+        instance
+            .decrypt()
+            .catch(e => console.error(e));
+        console.log(`${filePath} decrypted`);
+    }, 5000);
+
+    setTimeout(() => {
+        console.log("File sending")
+        res.sendFile(fileName, {root: STORAGE_PATH});
+    }, 10000);
 });
 
-app.post('/api/decrypt', upload.single('avatar'), (req, res) => {
-    const filePath = STORAGE_PATH + '/' + req.body.filename;
-    const password = req.body.password;
-
-    const instance = new Cryptify(filePath, password);
-    instance
-        .decrypt()
-        .catch(e => console.error(e));
-    return res.json({
-        isSuccessful: true,
-    })
-});
 app.listen(process.env.PORT || 8080, () => console.log(`Listening on port ${process.env.PORT || 8080}!`));
