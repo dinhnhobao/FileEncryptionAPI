@@ -69,27 +69,27 @@ app.post('/api/encrypt', upload.single('file'), (req, res) => {
       message: 'Your password is invalid. Please try again.',
     });
   }
+    const instance = new Cryptify(filePath,
+        utils.parsePassword(password)); // depends on OS
 
-  const instance = new Cryptify(filePath,
-      utils.parsePassword(password)); // depends on OS
-  
     instance
         .encrypt()
-        .catch((e) => console.error(e));
-    console.log(`${filePath} encrypted`);
-
-  setTimeout(() => {
-    console.log('File sending');
-    res.sendFile(fileName, {
-      root: STORAGE_PATH,
-    }, (err) => {
-      if (err) {
-        console.log(err);
-        res.sendStatus(400);
-      }
-      deleteFile(filePath);
-    });
-  }, 5000);
+        .then(() => {
+            console.log('File sending');
+            res.sendFile(fileName, {
+                root: STORAGE_PATH,
+            }, (err) => {
+                if (err) {
+                    console.log(err);
+                    res.sendStatus(400);
+                }
+                deleteFile(filePath);
+            });
+        })
+        .catch((err) => {
+            console.error(e);
+            res.sendStatus(400);
+        });
 });
 
 app.post('/api/decrypt', upload.single('file'), (req, res) => {
@@ -112,39 +112,37 @@ app.post('/api/decrypt', upload.single('file'), (req, res) => {
     });
   }
 
-  const instance = new Cryptify(filePath,
-      utils.parsePassword(password)); // depends on OS
-
-  let isSending = true;
-  instance
-      .decrypt()
-      .catch((e) => {
-          console.log('Error found');
-          console.error(e);
-          isSending = false;
-      });
-  console.log(`${filePath} decrypted`);
-
-  setTimeout(() => {
-    if (isSending) {
-      console.log('File sending');
-      res.sendFile(fileName, {
-        root: STORAGE_PATH,
-      }, (err) => {
-        if (err) {
-          console.log(err);
-          res.sendStatus(400);
-        }
         deleteFile(filePath);
-      });
-    } else {
-      deleteFile(filePath);
-      return res.status(400).json({
-        message: 'The password to decrypt the file is incorrect,' +
-          ' ' + 'or the file is corrupted. Please try again.',
-      });
+        return res.status(400).json({
+            message: 'Your password is invalid. Please try again.',
+        });
     }
-  }, 5000);
+
+    const instance = new Cryptify(filePath,
+        utils.parsePassword(password)); // depends on OS
+
+    instance
+        .decrypt()
+        .then(() => {
+            res.sendFile(fileName, {
+                root: STORAGE_PATH,
+            }, (err) => {
+                if (err) {
+                    console.log(err);
+                    res.sendStatus(400);
+                }
+                deleteFile(filePath);
+            });
+        })
+        .catch((e) => {
+            console.log('Error found');
+            console.error(e);
+            deleteFile(filePath);
+            return res.status(400).json({
+                message: 'The password to decrypt the file is incorrect,' +
+                    ' ' + 'or the file is corrupted. Please try again.',
+            });
+        });
 });
 
 app.listen(process.env.PORT || 8080, () => {
