@@ -37,23 +37,36 @@ const isAuthorised = (apiKey) => {
     return apiKey === 'eb53a0d3-8fb2-4f25-bb89-a4dfb7a64fc6';
 }
 
+const isPasswordValid = (password) => {
+    return password.length > 0;
+}
+
+const parsePassword = (password) => {
+    const INITIALS = '*+-/aA11';
+    return INITIALS + password;
+}
+
 const PASSWORD = 'DoQuyen123*';
 
 app.post('/api/encrypt', upload.single('file'), (req, res) => {
     const apiKey = req.headers.authorization;
-
-    console.log(apiKey);
-
     if (!isAuthorised(apiKey)) {
         return res.status(401).json({
             message: "Wrong API access key. Please contact your adminstrator."
         });
     }
 
+    const password = req.body.password;
+    if (!isPasswordValid(password)) {
+        return res.status(400).json({
+            message: "Your password is invalid. Please try again."
+        });
+    }
+
     const fileName = req.file.path.split("/")[1];
     const filePath = STORAGE_PATH + '/' + fileName;
 
-    const instance = new Cryptify(filePath, PASSWORD); // depends on OS
+    const instance = new Cryptify(filePath, parsePassword(password)); // depends on OS
 
     setTimeout(() => {
         instance
@@ -70,19 +83,23 @@ app.post('/api/encrypt', upload.single('file'), (req, res) => {
 
 app.post('/api/decrypt', upload.single('file'), (req, res) => {
     const apiKey = req.headers.authorization;
-
-    console.log(apiKey);
-
     if (!isAuthorised(apiKey)) {
         return res.status(401).json({
             message: "Wrong API access key. Please contact your adminstrator."
         });
     }
 
+    const password = req.body.password;
+    if (!isPasswordValid(password)) {
+        return res.status(400).json({
+            message: "Your password is invalid. Please try again."
+        });
+    }
+
     const fileName = req.file.path.split("/")[1];
     const filePath = STORAGE_PATH + '/' + fileName;
 
-    const instance = new Cryptify(filePath, PASSWORD); // depends on OS
+    const instance = new Cryptify(filePath, parsePassword(password)); // depends on OS
 
     setTimeout(() => {
         instance
