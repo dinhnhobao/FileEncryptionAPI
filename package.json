@@ -1,15 +1,14 @@
 {
-    "name": "simple-react-full-stack",
+    "name": "file-encryption-api",
     "version": "1.0.0",
-    "description": "Boilerplate to build a full stack web application using React, Node.js, Express and Webpack.",
+    "description": "File Encryption API for Microsoft Power Automate",
     "main": "src/index.js",
     "scripts": {
         "build": "webpack --mode production",
         "start": "npm run build && node src/index.js",
-        "server": "nodemon src/index.js"
+        "server": "nodemon -r esm src/index.js"
     },
-    "author": "Sandeep Raveesh",
-    "license": "ISC",
+    "author": "NUS IT",
     "dependencies": {
         "babel-polyfill": "^6.26.0",
         "cryptify": "^4.0.2",
@@ -28,9 +27,8 @@
         "clean-webpack-plugin": "^1.0.0",
         "concurrently": "^4.0.0",
         "css-loader": "^2.0.0",
-        "eslint": "^7.17.0",
+        "eslint": "^5.0.0",
         "eslint-config-airbnb": "^17.0.0",
-        "eslint-config-google": "^0.14.0",
         "eslint-plugin-import": "^2.11.0",
         "eslint-plugin-jsx-a11y": "^6.0.3",
         "eslint-plugin-react": "^7.7.0",
