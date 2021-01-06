@@ -143,3 +143,5 @@ app.post('/api/decrypt', upload.single('file'), (req, res) => {
 app.listen(process.env.PORT || 8080, () => {
     console.log(`Listening on port ${process.env.PORT || 8080}!`);
 });
+
+module.exports = app;

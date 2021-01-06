@@ -4,15 +4,16 @@ const { isAuthorised, isPasswordValid, parsePassword } = require('../main/utils'
 
 const { SERVER_API_KEY, PASSWORD_INITIALS } = require('../main/constants');
 const { RUBBISH, EMPTY_PASSWORD, VALID_PASSWORD, 
-    PASSWORD_WITH_SPECIAL_CHARS } = require('./constants');
+    PASSWORD_WITH_SPECIAL_CHARS, 
+    WRONG_SERVER_API_KEY} = require('./constants');
 
 describe('utils - API access key check', () => {
     it('returns true if the key is valid', () => {
-        assert.isTrue(isAuthorised(SERVER_API_KEY + ' .'));
+        assert.isTrue(isAuthorised(SERVER_API_KEY));
     });
 
     it('returns false if the key is incorrect', () => {
-        assert.isFalse(isAuthorised(SERVER_API_KEY + RUBBISH));
+        assert.isFalse(isAuthorised(WRONG_SERVER_API_KEY));
     });
 });
 
@@ -22,7 +23,7 @@ describe('utils - Password valid check', () => {
     });
 
     it('returns false if the password is invalid', () => {
-        assert.isTrue(isPasswordValid(EMPTY_PASSWORD));
+        assert.isFalse(isPasswordValid(EMPTY_PASSWORD));
     });
 });
 
