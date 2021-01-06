@@ -2,11 +2,12 @@
     "name": "file-encryption-api",
     "version": "1.0.0",
     "description": "File Encryption API for Microsoft Power Automate",
-    "main": "src/index.js",
+    "main": "src/main/index.js",
     "scripts": {
         "build": "webpack --mode production",
-        "start": "npm run build && node src/index.js",
-        "server": "nodemon -r esm src/index.js"
+        "start": "npm run build && node src/main/index.js",
+        "server": "nodemon -r esm src/main/index.js",
+        "test": "mocha 'src/test/*.js' --recursive --timeout 60000 --exit"
     },
     "author": "NUS IT",
     "dependencies": {
@@ -33,6 +34,7 @@
         "eslint-plugin-react": "^7.7.0",
         "file-loader": "^3.0.0",
         "html-webpack-plugin": "^3.2.0",
+        "mocha": "^8.2.1",
         "nodemon": "^1.19.4",
         "style-loader": "^0.23.0",
         "url-loader": "^1.0.1",
