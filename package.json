@@ -1,24 +1,20 @@
 {
-    "name": "simple-react-full-stack",
+    "name": "file-encryption-api",
     "version": "1.0.0",
-    "description": "Boilerplate to build a full stack web application using React, Node.js, Express and Webpack.",
-    "main": "src/server/index.js",
+    "description": "File Encryption API for Microsoft Power Automate",
+    "main": "src/index.js",
     "scripts": {
         "build": "webpack --mode production",
-        "start": "npm run build && node src/server/index.js",
-        "client": "webpack-dev-server --mode development --devtool inline-source-map --hot",
-        "server": "nodemon src/server/index.js",
-        "dev": "concurrently \"npm run server\" \"npm run client\""
+        "start": "npm run build && node src/index.js",
+        "server": "nodemon -r esm src/index.js"
     },
-    "author": "Sandeep Raveesh",
-    "license": "ISC",
+    "author": "NUS IT",
     "dependencies": {
         "babel-polyfill": "^6.26.0",
         "cryptify": "^4.0.2",
+        "esm": "^3.2.25",
         "express": "^4.16.3",
-        "multer": "^1.4.2",
-        "react": "^16.5.2",
-        "react-dom": "^16.5.2"
+        "multer": "^1.4.2"
     },
     "devDependencies": {
         "@babel/core": "^7.0.0",
@@ -40,8 +36,8 @@
         "nodemon": "^1.19.4",
         "style-loader": "^0.23.0",
         "url-loader": "^1.0.1",
-        "webpack": "^4.5.0",
-        "webpack-cli": "^3.0.8",
+        "webpack": "^4.44.2",
+        "webpack-cli": "^3.3.12",
         "webpack-dev-server": "^3.1.3"
     }
 }
