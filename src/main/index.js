@@ -15,10 +15,10 @@ app.use(bodyParser.urlencoded({
 app.use(bodyParser.json());
 
 const storage = multer.diskStorage({
-    destination: function(req, file, cb) {
+    destination: function (req, file, cb) {
         cb(null, STORAGE_PATH);
     },
-    filename: function(req, file, cb) {
+    filename: function (req, file, cb) {
         cb(null, Date.now() + '-' + file.originalname);
     },
 });
@@ -38,7 +38,9 @@ app.get('/api/test', upload.none(), (req, res) => {
 });
 
 const deleteFile = (filePath) => {
-    fs.unlinkSync(filePath);
+    if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+    }
 
     try {
         // remove tmp files
@@ -71,7 +73,7 @@ app.post('/api/encrypt', upload.single('file'), (req, res) => {
     }
 
     const instance = new Cryptify(filePath,
-        utils.parsePassword(password)); // depends on OS
+        utils.parsePassword(password));
 
     instance
         .encrypt()
