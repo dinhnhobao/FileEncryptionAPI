@@ -6,3 +6,5 @@ yarn.lock
 .github
 file
 scripts.txt
+
+deployment.txt
