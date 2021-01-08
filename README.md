@@ -53,7 +53,7 @@ npm run test
 
 If everything is well, you should see all 12 test cases passed.
 
-![`npm run test`](./docs/tests.png)
+![`npm run test`](./docs/images/tests.png)
 
 `server` contains integration tests. `utils` contains unit tests.
 
@@ -74,7 +74,7 @@ npm run server
 
 The server will be running on port `8080` by default.
 
-![Server running](./docs/server-running.png)
+![Server running](./docs/images/server-running.png)
 
 
 ## ⛏️ Built Using <a name = "built_using"></a>
