@@ -22,4 +22,4 @@ Tests can be run using `npm run test`.
 Other important NodeJS-related files such as `package.json` for dependency management, `nodemon.json` for live server reloading configuration, and `config.js`.
 
 ## Technical Implementation
-To understand how the code works, please go through the ![Technical Sharing Session slides](./technical-sharing-session.pptx). Please watch the slides in animation for the best experience.
+To understand how the code works, please go through the [Technical Sharing Session slides](./technical-sharing-session.pptx). Please watch the slides in animation for the best experience.
